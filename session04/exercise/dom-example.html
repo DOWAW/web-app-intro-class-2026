@@ -35,7 +35,16 @@
     </ul>
 
     <script>
-      // ↓↓↓ ここから下に、スライドのコードを書いてください ↓↓↓
+      // 要素の取得 アイテムを追加するボタンとリストを取得
+      const addItemBtn = document.getElementById("add-item-btn");
+      const itemList = document.getElementById("item-list");
+
+      addItemBtn.addEventListener("click", () => {
+
+        const newItem = document.createElement("li");
+        newItem.textContent = "新しいアイテム";
+        itemList.appendChild(newItem);
+      });
     </script>
   </body>
 </html>

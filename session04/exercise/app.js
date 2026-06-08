@@ -27,10 +27,9 @@ const todoList = document.getElementById("todo-list");
 //   3. render() を呼んで画面を再描画
 // ============================================================
 function addTodo(title) {
-  // ヒント:
-  //   if (title === "") return;
-  //   todos.push({ title: title, done: false });
-  //   render();
+  if (title === "") return;
+  todos.push({ title: title, done: false });
+  render();
 }
 
 // ============================================================
@@ -41,9 +40,8 @@ function addTodo(title) {
 //   2. render() を呼んで画面を再描画
 // ============================================================
 function toggleTodo(index) {
-  // ヒント:
-  //   todos[index].done = !todos[index].done;
-  //   render();
+  todos[index].done = !todos[index].done;
+  render();
 }
 
 // ============================================================
@@ -54,9 +52,8 @@ function toggleTodo(index) {
 //   2. render() を呼んで画面を再描画
 // ============================================================
 function deleteTodo(index) {
-  // ヒント:
-  //   todos.splice(index, 1);
-  //   render();
+  todos.splice(index, 1);
+  render();
 }
 
 // ============================================================
@@ -77,37 +74,45 @@ function deleteTodo(index) {
 // ============================================================
 function render() {
   // ステップ1: リストを空にする
+  todoList.innerHTML = "";
+
   // ステップ2: todosが空の場合の処理
+  if (todos.length === 0) {
+    const empty = document.createElement("li");
+    empty.textContent = "TODOがありません";
+    todoList.appendChild(empty);
+    return;
+  }
+
   // ステップ3: todosの各要素を描画
-  // ヒント:
-  //   todos.forEach((todo, index) => {
-  //     const li = document.createElement("li");
-  //     li.className = "todo-item" + (todo.done ? " done" : "");
-  //
-  //     const label = document.createElement("label");
-  //     label.className = "todo-label";
-  //
-  //     const checkbox = document.createElement("input");
-  //     checkbox.type = "checkbox";
-  //     checkbox.className = "todo-checkbox";
-  //     checkbox.checked = todo.done;
-  //     checkbox.addEventListener("change", () => toggleTodo(index));
-  //
-  //     const span = document.createElement("span");
-  //     span.className = "todo-title";
-  //     span.textContent = todo.title;
-  //
-  //     const deleteBtn = document.createElement("button");
-  //     deleteBtn.className = "delete-button";
-  //     deleteBtn.textContent = "削除";
-  //     deleteBtn.addEventListener("click", () => deleteTodo(index));
-  //
-  //     label.appendChild(checkbox);
-  //     label.appendChild(span);
-  //     li.appendChild(label);
-  //     li.appendChild(deleteBtn);
-  //     todoList.appendChild(li);
-  //   });
+  todos.forEach((todo, index) => {
+    const li = document.createElement("li");
+    li.className = "todo-item" + (todo.done ? " done" : "");
+
+    const label = document.createElement("label");
+    label.className = "todo-label";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "todo-checkbox";
+    checkbox.checked = todo.done;
+    checkbox.addEventListener("change", () => toggleTodo(index));
+
+    const span = document.createElement("span");
+    span.className = "todo-title";
+    span.textContent = todo.title;
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-button";
+    deleteBtn.textContent = "削除";
+    deleteBtn.addEventListener("click", () => deleteTodo(index));
+
+    label.appendChild(checkbox);
+    label.appendChild(span);
+    li.appendChild(label);
+    li.appendChild(deleteBtn);
+    todoList.appendChild(li);
+  });
 }
 
 // ============================================================
