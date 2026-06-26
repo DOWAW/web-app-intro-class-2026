@@ -36,14 +36,13 @@ app = FastAPI(title="TODO API")
 
 # --- TODO: CORS設定を追加してください（実習6・発展）---
 # 同一オリジン配信なら無くても動く。フロントを別オリジンに分けたとき必要になる設定。
-# ヒント:
-#   app.add_middleware(
-#       CORSMiddleware,
-#       allow_origins=["*"],
-#       allow_credentials=True,
-#       allow_methods=["*"],
-#       allow_headers=["*"],
-#   )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # --- データベース接続について ---
@@ -137,6 +136,7 @@ def delete_todo(todo_id: int):
 #   app.mount("/", StaticFiles(directory="static", html=True), name="static")
 #
 # 注意: app.mount() はすべてのパスを受け取るので、ファイルの最後に書いてください
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 
 if __name__ == "__main__":

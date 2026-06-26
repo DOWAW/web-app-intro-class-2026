@@ -36,14 +36,15 @@ TODO アプリで「新しい TODO を追加する」とき、ブラウザとサ
 以下の箇条書きを、**10 ステップくらい**で埋めてみましょう。
 
 - ユーザーがブラウザ上で「牛乳を買う」と入力して追加ボタンを押す
-- <!-- TODO: ここから書いていこう -->
-- <!-- TODO: -->
-- <!-- TODO: -->
-- <!-- TODO: -->
-- <!-- TODO: -->
-- <!-- TODO: -->
-- <!-- TODO: -->
-- <!-- TODO: -->
+- **ブラウザ**: フォームの submit イベントが発火し、`app.js` の `addTodo()` が呼ばれる
+- **ブラウザ**: input要素から入力値「牛乳を買う」を取得し、`JSON.stringify({ title: "牛乳を買う" })` でJSON文字列に変換する
+- **ブラウザ → サーバー**: `fetch("/todos", { method: "POST", headers: {"Content-Type": "application/json"}, body: ... })` でHTTPリクエストを送信する（Fetch API）
+- **サーバー**: FastAPIが `@app.post("/todos")` の `create_todo()` でリクエストを受信し、Pydanticがリクエストボディの型をチェックする
+- **サーバー → データベース**: `INSERT INTO todos (title, done) VALUES (?, 0)` を実行し、`todo.db` に新しいレコードを保存する（SQL）
+- **サーバー**: `cursor.lastrowid` で自動採番されたidを取得し、`{"id": ..., "title": "牛乳を買う", "done": false}` をJSONレスポンスとして返す
+- **サーバー → ブラウザ**: HTTPレスポンス（JSON）がブラウザに戻る
+- **ブラウザ**: `addTodo()` が続けて `loadTodos()` を呼び、`fetch("/todos")` で `GET /todos` を送って最新の一覧を再取得する
+- **ブラウザ**: 受け取ったデータを `renderTodos()` がDOMに描画し、画面のリストに「牛乳を買う」が表示される
 - 画面のリストに「牛乳を買う」が表示される
 
 ---
