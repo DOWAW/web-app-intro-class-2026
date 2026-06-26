@@ -92,7 +92,16 @@ def create_todo(todo: TodoCreate):
     #   4. new_id = cursor.lastrowid で新しいIDを取得
     #   5. conn.close() で閉じる
     #   6. {"id": new_id, "title": todo.title, "done": False} を返す
-    pass
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO todos (title, done) VALUES (?, 0)",
+        (todo.title,),
+    )
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return {"id": new_id, "title": todo.title, "done": False}
 
 
 # PUT /todos/{todo_id} - TODO更新
@@ -110,7 +119,20 @@ def update_todo(todo_id: int, todo: TodoUpdate):
     #   5. conn.commit(), conn.close()
     #   6. {"id": todo_id, "title": existing[0], "done": todo.done} を返す
     #      （existing は (title,) のタプルなので先頭を取り出す）
-    pass
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT title FROM todos WHERE id = ?", (todo_id,))
+    existing = cursor.fetchone()
+    if existing is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="TODO not found")
+    cursor.execute(
+        "UPDATE todos SET done = ? WHERE id = ?",
+        (int(todo.done), todo_id),
+    )
+    conn.commit()
+    conn.close()
+    return {"id": todo_id, "title": existing[0], "done": todo.done}
 
 
 # DELETE /todos/{todo_id} - TODO削除
@@ -127,7 +149,17 @@ def delete_todo(todo_id: int):
     #   4. cursor.execute("DELETE FROM todos WHERE id = ?", (todo_id,))
     #   5. conn.commit(), conn.close()
     #   6. {"message": "TODO deleted", "id": todo_id} を返す
-    pass
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM todos WHERE id = ?", (todo_id,))
+    existing = cursor.fetchone()
+    if existing is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="TODO not found")
+    cursor.execute("DELETE FROM todos WHERE id = ?", (todo_id,))
+    conn.commit()
+    conn.close()
+    return {"message": "TODO deleted", "id": todo_id}
 
 
 if __name__ == "__main__":
