@@ -12,7 +12,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # --- FastAPIアプリ ---
 app = FastAPI(title="TODO App")
@@ -51,11 +51,8 @@ def init_db():
 # --- Pydanticモデル ---
 
 
-# TODO(実習5): TodoCreate にバリデーションを追加してください
-#   ヒント: from pydantic import Field を追加して
-#           title: str = Field(min_length=1, max_length=100) に書き換える
 class TodoCreate(BaseModel):
-    title: str  # ← ここにバリデーションを追加
+    title: str = Field(min_length=1, max_length=100)
 
 
 class TodoUpdate(BaseModel):
@@ -88,14 +85,10 @@ def create_todo(todo: TodoCreate):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    # TODO(実習4): パラメータバインディングに修正してください
-    #   修正前（危険）: f-string でユーザー入力を直接SQL文に埋め込んでいる
-    #   修正後（安全）:
-    #     cursor.execute(
-    #         "INSERT INTO todos (title, done) VALUES (?, 0)",
-    #         (todo.title,)
-    #     )
-    cursor.execute(f"INSERT INTO todos (title, done) VALUES ('{todo.title}', 0)")
+    cursor.execute(
+        "INSERT INTO todos (title, done) VALUES (?, 0)",
+        (todo.title,)
+    )
     conn.commit()
     todo_id = cursor.lastrowid
 
@@ -113,19 +106,14 @@ def update_todo(todo_id: int, todo: TodoUpdate):
     cursor.execute("SELECT title FROM todos WHERE id = ?", (todo_id,))
     existing = cursor.fetchone()
 
-    # TODO(実習6): 存在しないTODOの場合に404を返してください
-    #   ヒント:
-    #     if existing is None:
-    #         conn.close()
-    #         raise HTTPException(status_code=404, detail="TODO not found")
+    if existing is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="TODO not found")
 
-    # TODO(実習4): パラメータバインディングに修正してください
-    #   修正後:
-    #     cursor.execute(
-    #         "UPDATE todos SET done = ? WHERE id = ?",
-    #         (int(todo.done), todo_id)
-    #     )
-    cursor.execute(f"UPDATE todos SET done = {int(todo.done)} WHERE id = {todo_id}")
+    cursor.execute(
+        "UPDATE todos SET done = ? WHERE id = ?",
+        (int(todo.done), todo_id)
+    )
     conn.commit()
 
     conn.close()
@@ -139,18 +127,13 @@ def delete_todo(todo_id: int):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    # TODO(実習6): 存在しないTODOの場合に404を返してください
-    #   ヒント:
-    #     cursor.execute("SELECT id FROM todos WHERE id = ?", (todo_id,))
-    #     existing = cursor.fetchone()
-    #     if existing is None:
-    #         conn.close()
-    #         raise HTTPException(status_code=404, detail="TODO not found")
+    cursor.execute("SELECT id FROM todos WHERE id = ?", (todo_id,))
+    existing = cursor.fetchone()
+    if existing is None:
+        conn.close()
+        raise HTTPException(status_code=404, detail="TODO not found")
 
-    # TODO(実習4): パラメータバインディングに修正してください
-    #   修正後:
-    #     cursor.execute("DELETE FROM todos WHERE id = ?", (todo_id,))
-    cursor.execute(f"DELETE FROM todos WHERE id = {todo_id}")
+    cursor.execute("DELETE FROM todos WHERE id = ?", (todo_id,))
     conn.commit()
 
     conn.close()
