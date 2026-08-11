@@ -1,6 +1,9 @@
 /* ============================================
-   TODO App CSS - 第8回
-   第7回の正解ベース + エラーメッセージスタイル追加
+   ゲーム進捗メモ CSS - 第9回
+   TODOアプリのCSSがベース。構造はそのままで、配色と細かい見た目を変えた。
+
+   配色は濃紺 + オレンジ。青一色だった元のアプリと差をつけつつ、
+   3色くらいに絞って落ち着いた見た目にしている。
 
    CSSは「どの部分を(セレクタ)・どう見せるか(プロパティ)」を指定するもの。
    .header のように . で始まるのはHTMLの class="..." を狙う書き方。
@@ -19,8 +22,8 @@ body {
   /* 文字フォント。先頭から順に、使えるものが採用される（日本語フォントも指定） */
   font-family:
     "Helvetica Neue", Arial, "Hiragino Sans", "Noto Sans JP", sans-serif;
-  background-color: #f3f4f6; /* 背景色（薄いグレー）。#から始まるのは色コード */
-  color: #333; /* 文字色（濃いグレー） */
+  background-color: #f2f3f5; /* 背景色（うすいグレー）。#から始まるのは色コード */
+  color: #1f2933; /* 文字色（濃いグレー） */
   min-height: 100vh; /* 画面の高さいっぱいまで広げる（100vh=画面の高さ100%） */
   display: flex; /* 中身をflexboxで並べる */
   flex-direction: column; /* 縦方向（上から下）に並べる → ヘッダー/本文/フッター */
@@ -28,169 +31,340 @@ body {
 
 /* --- ヘッダー --- */
 .header {
-  background-color: #2563eb; /* 青色の背景 */
+  background-color: #16324f; /* 濃紺の背景（テーマカラー） */
   color: white; /* 白い文字 */
-  padding: 16px 24px; /* 内側の余白（上下16px / 左右24px） */
+  padding: 18px 24px; /* 内側の余白（上下18px / 左右24px） */
   text-align: center; /* 文字を中央ぞろえに */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 下にうっすら影をつける */
+  border-bottom: 4px solid #e2711d; /* 下辺にオレンジの線を引いてアクセントにする */
 }
 
 .header h1 {
   /* .header の中にある <h1> という意味（スペースで「〜の中の」を表す） */
   font-size: 24px; /* 文字の大きさ */
   font-weight: bold; /* 太字 */
+  letter-spacing: 0.04em; /* 文字と文字のすき間を少し広げる */
 }
 
-/* --- TODOカード --- */
-/* TODO一覧をのせる白いカード部分 */
-.todo-card {
+/* 見出しの下の説明文 */
+.header-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #b9c6d4; /* 白より少し暗くして、見出しより控えめに見せる */
+}
+
+/* --- カード --- */
+/* 一覧をのせる白いカード部分 */
+.game-card {
   background-color: white;
-  max-width: 600px; /* これ以上は横に広がらない（読みやすさのため） */
+  max-width: 640px; /* これ以上は横に広がらない（読みやすさのため） */
   width: 100%; /* 画面が狭いときは横幅いっぱいに */
   margin: 24px auto; /* 上下24px / 左右autoで中央に寄せる */
-  padding: 32px; /* 内側の余白 */
-  border-radius: 12px; /* 角を丸くする */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* 浮いて見える影 */
+  padding: 28px; /* 内側の余白 */
+  border-radius: 6px; /* 角を少しだけ丸くする */
+  border: 1px solid #dfe3e8;
   flex: 1; /* 余ったスペースを埋めて広がる（フッターを下に押しやる） */
 }
 
 /* --- エラーメッセージ（第8回で追加） --- */
 /* 普段は隠れていて、エラー時に app.js が表示する赤い帯 */
 .error-message {
-  background-color: #fee2e2; /* 薄い赤の背景 */
-  color: #dc2626; /* 赤い文字 */
+  background-color: #fdecea; /* 薄い赤の背景 */
+  color: #b3261e; /* 赤い文字 */
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 4px;
   margin-bottom: 16px; /* 下に余白をあけて入力欄と離す */
   font-size: 14px;
-  border: 1px solid #fecaca; /* 赤い枠線（太さ1px・実線） */
+  border-left: 4px solid #b3261e; /* 左辺だけ太い赤線を引く */
 }
 
 /* --- 入力エリア --- */
-/* 入力欄と追加ボタンを横並びにする箱 */
+/* ゲーム名を1行目、ハード名/枠/ボタンを2行目に置く */
 .input-area {
-  display: flex; /* 子要素を横並びに */
-  gap: 8px; /* 子要素どうしのすき間 */
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column; /* 縦に積む */
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-/* テキスト入力欄 */
-.todo-input {
-  flex: 1; /* 余った横幅をすべて使って広がる（ボタンの残り全部） */
-  padding: 12px 16px;
-  border: 2px solid #d1d5db; /* グレーの枠線 */
-  border-radius: 8px;
-  font-size: 16px;
+/* 2行目の横並び */
+.input-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* テキスト入力欄・選択欄の共通の見た目 */
+.game-input,
+.hardware-input,
+.kind-input {
+  padding: 10px 14px;
+  border: 1px solid #c4ccd4; /* グレーの枠線 */
+  border-radius: 4px;
+  font-size: 15px;
+  font-family: inherit; /* body で決めたフォントを引き継ぐ（selectは指定しないと変わる） */
+  background-color: white;
   outline: none; /* クリック時にブラウザが出す枠を消す（下で自前の色をつける） */
-  transition: border-color 0.3s; /* 枠線の色が0.3秒かけてなめらかに変わる */
+  transition: border-color 0.2s; /* 枠線の色がなめらかに変わる */
+}
+
+.hardware-input {
+  flex: 1; /* 余った横幅を使って広がる */
+}
+
+.kind-input {
+  cursor: pointer;
 }
 
 /* :focus = その要素を選択中（クリックや入力中）のときだけ適用 */
-.todo-input:focus {
-  border-color: #2563eb; /* 入力中は枠線を青くする */
+.game-input:focus,
+.hardware-input:focus,
+.kind-input:focus {
+  border-color: #16324f; /* 入力中は枠線を濃紺にする */
 }
 
 /* 追加ボタン */
-.todo-button {
-  padding: 12px 24px;
-  background-color: #2563eb;
+.game-button {
+  padding: 10px 22px;
+  background-color: #e2711d; /* オレンジ。ページ内で一番目立たせたい操作 */
   color: white;
   border: none; /* 枠線なし */
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 4px;
+  font-size: 15px;
   font-weight: bold;
+  font-family: inherit;
   cursor: pointer; /* マウスを乗せると指のカーソルになる */
-  transition: background-color 0.3s; /* 色の変化をなめらかに */
+  transition: background-color 0.2s;
   white-space: nowrap; /* ボタンの文字を途中で改行させない */
 }
 
 /* :hover = マウスを乗せたときだけ適用 */
-.todo-button:hover {
-  background-color: #1d4ed8; /* 少し濃い青にして「押せる」感を出す */
+.game-button:hover {
+  background-color: #c65f14; /* 少し濃いオレンジにして「押せる」感を出す */
 }
 
-/* --- TODOリスト --- */
-.todo-list {
+/* --- 絞り込みエリア（Level 3） --- */
+.filter-area {
+  display: flex;
+  gap: 0; /* ボタンどうしをくっつけてタブのように見せる */
+  border-bottom: 1px solid #dfe3e8;
+  margin-bottom: 10px;
+}
+
+.filter-button {
+  padding: 8px 14px;
+  background-color: transparent;
+  color: #5b6b7b;
+  border: none;
+  border-bottom: 2px solid transparent; /* 下線の場所を先に確保しておく */
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.filter-button:hover {
+  color: #16324f;
+}
+
+/* .active は、いま選ばれているボタンに app.js が付け外しするclass */
+.filter-button.active {
+  color: #16324f;
+  border-bottom-color: #e2711d; /* 選択中のタブの下にオレンジの線が出る */
+  font-weight: bold;
+}
+
+/* --- 件数表示と操作をまとめた行（Level 3） --- */
+.tool-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 左に件数、右に操作を寄せる */
+  gap: 10px;
+  flex-wrap: wrap; /* 狭いときは折り返す */
+  margin-bottom: 14px;
+}
+
+.count-text {
+  font-size: 13px;
+  color: #6b7885;
+}
+
+/* 右側の操作（並び替え・リセット）を横に並べる */
+.tool-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 並び替えのプルダウン */
+.sort-input {
+  padding: 5px 8px;
+  border: 1px solid #c4ccd4;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  background-color: white;
+  color: #46535f;
+  cursor: pointer;
+  outline: none;
+}
+
+.sort-input:focus {
+  border-color: #16324f;
+}
+
+/* デイリーをリセットするボタン。削除ほど強くない操作なので控えめにする */
+.reset-button {
+  padding: 5px 11px;
+  background-color: white;
+  color: #46535f;
+  border: 1px solid #c4ccd4;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.reset-button:hover {
+  background-color: #fdeee1;
+  color: #b4560f;
+  border-color: #eab591;
+}
+
+/* --- ゲームリスト --- */
+.game-list {
   list-style: none; /* <li>の先頭につく「・」を消す */
 }
 
-/* TODO1件ぶんの行（app.js が1件ずつ作る） */
-.todo-item {
+/* 表示するものが無いときの案内文 */
+.empty-text {
+  padding: 28px;
+  text-align: center;
+  color: #9aa5b1;
+  font-size: 14px;
+}
+
+/* ゲーム1件ぶんの行（app.js が1件ずつ作る） */
+.game-item {
   display: flex;
   align-items: center; /* 中身を縦方向の中央にそろえる */
   justify-content: space-between; /* 左(チェック+文字)と右(削除ボタン)を両端に分ける */
-  padding: 12px 16px;
-  margin-bottom: 8px; /* 行どうしのすき間 */
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 6px; /* 行どうしのすき間 */
+  background-color: white;
+  border: 1px solid #e4e8ec;
+  border-left: 3px solid #16324f; /* 左端に濃紺の線を入れて、行の始まりを分かりやすく */
+  border-radius: 4px;
   transition: background-color 0.2s;
 }
 
-.todo-item:hover {
-  background-color: #eff6ff; /* マウスを乗せた行をうっすら青く */
+.game-item:hover {
+  background-color: #f7f9fa; /* マウスを乗せた行をうっすらグレーに */
 }
 
-/* チェックボックスとタイトルをまとめたラベル部分 */
-.todo-label {
+/* チェックボックスと文字をまとめたラベル部分 */
+.game-label {
   display: flex;
   align-items: center;
   gap: 12px; /* チェックボックスと文字のすき間 */
   flex: 1; /* 残りの横幅を使って広がる */
-}
-
-.todo-checkbox {
-  width: 20px;
-  height: 20px;
   cursor: pointer;
-  accent-color: #2563eb; /* チェックを入れたときの色を青に */
 }
 
-.todo-title {
-  font-size: 16px;
-  line-height: 1.5; /* 行の高さ（文字サイズの1.5倍）。読みやすくする */
+.game-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #e2711d; /* チェックを入れたときの色をオレンジに */
+  flex-shrink: 0; /* 横幅が足りなくてもチェックボックスは縮めない */
+}
+
+/* ゲーム名と補足を縦に積む箱 */
+.game-text {
+  display: flex;
+  flex-direction: column; /* 縦並び */
+  gap: 4px;
+}
+
+.game-title {
+  font-size: 15px;
+  line-height: 1.4; /* 行の高さ。読みやすくする */
   word-break: break-word; /* 長い文字列を途中で折り返して、はみ出させない */
 }
 
-/* --- 完了状態 --- */
-/* .todo-item.done = item と done の両方のclassを持つ要素（＝完了したTODO）。
-   app.js が完了時に "done" クラスを付け外しする */
-.todo-item.done {
-  background-color: #f0fdf4; /* 薄い緑の背景 */
-  border-color: #bbf7d0;
+/* 枠バッジとハード名を横に並べる行 */
+.game-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.todo-item.done .todo-title {
+/* 枠のバッジ（クリア / 毎日） */
+.kind-badge {
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* クリア枠は濃紺、毎日枠はオレンジで色分けする */
+.kind-clear {
+  background-color: #e7edf3;
+  color: #16324f;
+}
+
+.kind-daily {
+  background-color: #fdeee1;
+  color: #b4560f;
+}
+
+.game-hardware {
+  font-size: 12px;
+  color: #7b8794;
+  word-break: break-word;
+}
+
+/* --- 済みの見た目 --- */
+/* .game-item.done = item と done の両方のclassを持つ要素。
+   app.js がチェック時に "done" クラスを付け外しする */
+.game-item.done {
+  background-color: #f7f9fa;
+  border-left-color: #9aa5b1; /* 左の線を薄いグレーにして、済んだ感じを出す */
+}
+
+.game-item.done .game-title {
   text-decoration: line-through; /* 文字に取り消し線を引く */
-  color: #9ca3af; /* 文字を薄いグレーにして「完了済み」を表す */
+  color: #9aa5b1; /* 文字を薄いグレーにして「済み」を表す */
 }
 
 /* --- 削除ボタン --- */
 .delete-button {
-  padding: 6px 12px;
+  padding: 5px 11px;
   background-color: transparent; /* 背景は透明（普段は目立たせない） */
-  color: #9ca3af;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 13px;
+  color: #9aa5b1;
+  border: 1px solid #d5dbe0;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
   cursor: pointer;
-  transition: all 0.3s; /* all = すべてのプロパティの変化をなめらかに */
+  transition: all 0.2s; /* all = すべてのプロパティの変化をなめらかに */
+  flex-shrink: 0; /* 横幅が足りなくてもボタンは縮めない */
 }
 
 .delete-button:hover {
   /* マウスを乗せると赤系に変わり、「削除」だと分かりやすくする */
-  background-color: #fef2f2;
-  color: #dc2626;
-  border-color: #fca5a5;
+  background-color: #fdecea;
+  color: #b3261e;
+  border-color: #f0b4ae;
 }
 
 /* --- ページフッター --- */
 .footer {
-  background-color: #374151; /* 濃いグレーの背景 */
-  color: #9ca3af;
+  background-color: #16324f; /* ヘッダーと同じ濃紺でページを挟む */
+  color: #8fa2b5;
   text-align: center;
-  padding: 16px;
-  font-size: 14px;
+  padding: 14px;
+  font-size: 13px;
 }
 
 /* --- レスポンシブ --- */
@@ -201,16 +375,16 @@ body {
     font-size: 20px; /* 見出しを少し小さく */
   }
 
-  .todo-card {
+  .game-card {
     margin: 12px; /* 余白を詰めて、画面を広く使う */
     padding: 16px;
   }
 
-  .input-area {
-    flex-direction: column; /* 入力欄とボタンを横並び → 縦並びに変える */
+  .input-row {
+    flex-wrap: wrap; /* 入りきらない要素を次の行に折り返す */
   }
 
-  .todo-button {
+  .game-button {
     width: 100%; /* ボタンを横幅いっぱいにして押しやすく */
   }
 }
